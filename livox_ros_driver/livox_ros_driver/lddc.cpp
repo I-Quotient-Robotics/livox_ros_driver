@@ -504,9 +504,9 @@ uint32_t Lddc::PublishImuData(LidarDataQueue *queue, uint32_t packet_num,
   imu_data.angular_velocity.x = imu->gyro_x;
   imu_data.angular_velocity.y = imu->gyro_y;
   imu_data.angular_velocity.z = imu->gyro_z;
-  imu_data.linear_acceleration.x = imu->acc_x;
-  imu_data.linear_acceleration.y = imu->acc_y;
-  imu_data.linear_acceleration.z = imu->acc_z;
+  imu_data.linear_acceleration.x = imu->acc_x * 9.8015f;
+  imu_data.linear_acceleration.y = imu->acc_y * 9.8015f;
+  imu_data.linear_acceleration.z = imu->acc_z * 9.8015f;
 
   QueuePopUpdate(queue);
   ++published_packet;
