@@ -203,7 +203,8 @@ uint32_t Lddc::PublishPointcloud2(LidarDataQueue *queue, uint32_t packet_num,
     }
     /** Use the first packet timestamp as pointcloud2 msg timestamp */
     if (!published_packet) {
-      cloud.header.stamp = ros::Time(timestamp / 1000000000.0);
+      // cloud.header.stamp = ros::Time(timestamp / 1000000000.0);
+      cloud.header.stamp = ros::Time::now();
     }
     uint32_t single_point_num = storage_packet.point_num * echo_num;
 
@@ -307,6 +308,7 @@ uint32_t Lddc::PublishPointcloudData(LidarDataQueue *queue, uint32_t packet_num,
     }
     if (!published_packet) {
       cloud->header.stamp = timestamp / 1000.0;  // to pcl ros time stamp
+      // cloud->header.stamp = ros::Time::now();  // to pcl ros time stamp
     }
     uint32_t single_point_num = storage_packet.point_num * echo_num;
 
@@ -425,7 +427,8 @@ uint32_t Lddc::PublishCustomPointcloud(LidarDataQueue *queue,
       livox_msg.timebase = timestamp;
       packet_offset_time = 0;
       /** convert to ros time stamp */
-      livox_msg.header.stamp = ros::Time(timestamp / 1000000000.0);
+      // livox_msg.header.stamp = ros::Time(timestamp / 1000000000.0);
+      livox_msg.header.stamp = ros::Time::now();
     } else {
       packet_offset_time = (uint32_t)(timestamp - livox_msg.timebase);
     }
@@ -489,12 +492,13 @@ uint32_t Lddc::PublishImuData(LidarDataQueue *queue, uint32_t packet_num,
   uint8_t data_source = lds_->lidars_[handle].data_src;
   StoragePacket storage_packet;
   QueuePrePop(queue, &storage_packet);
-  LivoxEthPacket *raw_packet =
+   *raw_packet =
       reinterpret_cast<LivoxEthPacket *>(storage_packet.raw_data);
   timestamp = GetStoragePacketTimestamp(&storage_packet, data_source);
   if (timestamp >= 0) {
     imu_data.header.stamp =
-        ros::Time(timestamp / 1000000000.0);  // to ros time stamp
+        // ros::Time(timestamp / 1000000000.0);  // to ros time stamp
+        ros::Time::now();
   }
 
   uint8_t point_buf[2048];
@@ -504,9 +508,12 @@ uint32_t Lddc::PublishImuData(LidarDataQueue *queue, uint32_t packet_num,
   imu_data.angular_velocity.x = imu->gyro_x;
   imu_data.angular_velocity.y = imu->gyro_y;
   imu_data.angular_velocity.z = imu->gyro_z;
-  imu_data.linear_acceleration.x = imu->acc_x * 9.8015f;
-  imu_data.linear_acceleration.y = imu->acc_y * 9.8015f;
-  imu_data.linear_acceleration.z = imu->acc_z * 9.8015f;
+  // imu_data.linear_acceleration.x = imu->acc_x;
+  // imu_data.linear_acceleration.y = imu->acc_y;
+  // imu_data.linear_acceleration.z = imu->acc_z;
+  imu_data.linear_acceleration.x = imu->acc_x * 9.80665f;
+  imu_data.linear_acceleration.y = imu->acc_y * 9.80665f;
+  imu_data.linear_acceleration.z = imu->acc_z * 9.80665f;
 
   QueuePopUpdate(queue);
   ++published_packet;
