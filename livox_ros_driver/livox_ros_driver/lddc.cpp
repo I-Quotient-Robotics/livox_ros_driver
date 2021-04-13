@@ -492,7 +492,7 @@ uint32_t Lddc::PublishImuData(LidarDataQueue *queue, uint32_t packet_num,
   uint8_t data_source = lds_->lidars_[handle].data_src;
   StoragePacket storage_packet;
   QueuePrePop(queue, &storage_packet);
-   *raw_packet =
+  LivoxEthPacket *raw_packet =
       reinterpret_cast<LivoxEthPacket *>(storage_packet.raw_data);
   timestamp = GetStoragePacketTimestamp(&storage_packet, data_source);
   if (timestamp >= 0) {
